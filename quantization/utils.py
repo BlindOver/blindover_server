@@ -2,8 +2,8 @@ import os
 import time
 
 import torch
-import torchvision.models as models
-import torchvision.models.quantization as quantize_models
+
+from quantization import load_model
 
 
 def print_latency(process, req_return=False):
@@ -11,12 +11,12 @@ def print_latency(process, req_return=False):
     if req_return:
         result = process
         end = time.time()
-        print(end - start: 3.f)
+        print(end - start)
         return result
     else:
         process
         end = time.time()
-        print(end - start: 3.f)
+        print(end - start)
 
 
 def print_size_of_model(model, label=''):
@@ -27,30 +27,14 @@ def print_size_of_model(model, label=''):
     return size
 
 
-def load_models(model_name: str):
-    assert model_name in ('resnet18', 'resnet50', 'mobilenetv3', 'shufflenetv2')
-    
-    if model_name == 'resnet18':
-        float_model = models.resnet18()
-        quantized_model = quantize_models.resnet18(quantize=True)
-
-    elif model_name == 'resnet50':
-        float_model = models.resnet50()
-        quantized_model = quantize_models.resnet50(quantize=True)
-
-    elif model_name == 'mobilenetv3':
-        float_model = models.mobilenetv3_large()
-        quantized_model = quantize_models.mobilenet_v3_large(quantize=True)
-    
-    else: # shufflenetv2
-        float_model = models.shufflenet_v2_x0_5()
-        quantized_model = quantize_models.shufflenet_v2_x0_5(quantize=True)
-    
-    return float_model, quantized_model
-
-
-def comparison_size_of_models(model_name):
-    float_model, quantized_model = load_models(model_name)
+def comparison_size_of_models(model_name: str, num_classes: int=33):
+    float_model = load_model(model_name, num_classes=num_classes, quantization=False)
+    quantized_model = load_model(model_name, num_classes=num_classes, quantization=True)
+    quantized_model.eval()
+    quantized_model = model.cpu()
+    quantized_model.qconfig = torch.quantization.get_default_qconfig('fbgemm')
+    quantized_model = torch.quantization.prepare(modquantized_modelel)
+    quantized_model = torch.quantization.convert(quantized_model)
     f = print_size_of_model(float_model, 'float32')
     q = print_size_of_model(quantized_model, 'int8')
     print("{0:.2f} times smaller".format(f / q))
