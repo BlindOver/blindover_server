@@ -3,7 +3,7 @@ import torch
 
 def load_model(model_name, num_classes, quantization=True):
     if model_name == 'shufflenet':
-        from ..models.shufflenet import ShuffleNetV2
+        from models.shufflenet import ShuffleNetV2
         model = ShuffleNetV2(num_classes=num_classes, pre_trained=False, quantization=quantization)
 
     elif model_name == 'mobilenet':

@@ -20,6 +20,7 @@ def test(
     image_list, label_list, output_list = [], [], []
     
     model.eval()
+    start = time.time()
     with torch.no_grad():
         batch_acc = 0
         for batch, (images, labels) in enumerate(test_loader):
@@ -37,6 +38,7 @@ def test(
     
     plot_results(image_list, label_list, output_list, project_name)
     print(f'{"="*20} Test Results: Accuracy {acc*100:.2f} {"="*20}')
+    print(f'time: {time.time()-start:.3f}')
 
 
 def get_args_parser():
@@ -59,9 +61,9 @@ def get_args_parser():
                         help='class number of dataset')
     parser.add_argument('--project_name', type=str, default='prj',
                         help='create new folder named project name')
-    parser.add_argument('--quantization', store='action_treu',
+    parser.add_argument('--quantization', action='store_true',
                         help='evaluate the performance of quantized model')
-    parser.add_argument('--measure_latency', store='action_true',
+    parser.add_argument('--measure_latency', action='store_true',
                         help='measure latency time')
     return parser
 
@@ -84,14 +86,14 @@ def main(args):
     if args.quantization:
         device = torch.device('cpu')
     else:
-        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        device = torch.device('cpu')
 
     # set model
     if args.quantization:
         model = quantization_serving(model_name=args.model_name, weight=args.weight, num_classes=args.num_classes)
     else:
         model = load_model(model_name=args.model_name, num_classes=args.num_classes, quantization=False)
-        model.load_state_dict(torch.load(args.weight))
+        model.load_state_dict(torch.load(args.weight, map_location=device))
 
     model = model.to(device)
 
