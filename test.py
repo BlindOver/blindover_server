@@ -14,7 +14,7 @@ from quantization.utils import print_latency
 def test(
     test_loader,
     device,
-    model: nn.Module,
+    model,
     project_name: str,
 ):
     image_list, label_list, output_list = [], [], []
