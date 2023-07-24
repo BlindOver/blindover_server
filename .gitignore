@@ -3,4 +3,4 @@
 *.pth
 /photo
 .DS_Store
-./runs
+runs
