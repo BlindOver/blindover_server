@@ -6,11 +6,9 @@ import torch
 import os
 from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
-from inference import inference
-from inference import load_image
+from inference import print_model
 
-from inference import quantized_load_image
-from inference import modelReturn
+
 import time
 
 # from colabcode import ColabCode
@@ -47,11 +45,8 @@ async def create_upload_file(file: UploadFile = File(...)):
   # output = model(image)
   # logger.info("Classify Result = {}", output)
 
-  model = modelReturn(False, "shufflenet", "./weights/shufflenet_weight.pt")
   start = time.time()
-  # img = load_image(file)
-  img = load_image(file)
-  result = inference(img, model)
+  result = print_model("resnet18",file.file,"./weights/resnet18_qat.pt","qat")
   print(result)
   print(time.time() - start)
   return result

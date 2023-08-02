@@ -45,24 +45,8 @@ def inference(src: torch.Tensor, model: nn.Module):
     return result
 
 
-def get_args_parser():
-    parser = argparse.ArgumentParser(description='Inference', add_help=False)
-    parser.add_argument('--model_name', type=str, required=True,
-                        help='model name')
-    parser.add_argument('--src', type=str, required=True,
-                        help='input image')
-    parser.add_argument('--weight', type=str, required=True,
-                        help='a path of trained weight file')
-    parser.add_argument('--quantization', type=str, default='none', choices=['none', 'qat', 'ptq'],
-                        help='load quantized model or float32 model')
-    parser.add_argument('--measure_latency', action='store_true',
-                        help='print latency time')
-    parser.add_argument('--num_classes', type=int, default=33,
-                        help='the number of classes')
-    return parser
 
-
-def main(
+def print_model(
     model_name: str, 
     src: str, 
     weight: str, 
@@ -109,4 +93,4 @@ def main(
 
     img, _ = load_image(src)
     result = inference(img, model)
-    print(result)
+    return result
